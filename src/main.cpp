@@ -7,7 +7,7 @@
 // Define the previous values to detect changes
 int lastLRValue = 0;
 int lastUDValue = 0;
-const int threshold = 50; // Threshold for change detection
+const int threshold = 100; // Threshold for change detection
 
 // Function Declarations
 void Init_Serial();
@@ -19,8 +19,8 @@ void setup()
 {
   Init_Serial();
   espnow_initialize();
-  pinMode(LR_PIN, INPUT);
-  pinMode(UD_PIN, INPUT);
+  // pinMode(LR_PIN, INPUT);
+  // pinMode(UD_PIN, INPUT);
   pinMode(SW_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(SW_PIN), handleJoystickButtonPress, FALLING);
 
@@ -54,29 +54,15 @@ void sendDataIfJoystickMoved()
 {
   int currentLRValue = analogRead(LR_PIN);
   int currentUDValue = analogRead(UD_PIN);
-
+  delay(1000);
   if (abs(currentLRValue - lastLRValue) > threshold || abs(currentUDValue - lastUDValue) > threshold)
   {
-    lastLRValue = currentLRValue;
-    lastUDValue = currentUDValue;
-    sendJoystickXY(currentLRValue, currentUDValue);
+    struct_msg_Send dataToSend;
+    dataToSend.joystickX = currentLRValue; // Assign values as needed
+    dataToSend.joystickY = lastLRValue;
+
+    // Send data
+
+    esp_now_send(broadcastAddress, (uint8_t *)&dataToSend, sizeof(dataToSend));
   }
-}
-
-void sendJoystickXY(int x, int y)
-{
-
-  struct_msg_Send dataToSend;
-  dataToSend.joystickX = x; // Assign values as needed
-  dataToSend.joystickY = y;
-
-  // Send data
-
-  esp_now_send(broadcastAddress, (uint8_t *)&dataToSend, sizeof(dataToSend));
-
-  // For debugging
-  Serial.print("Joystick moved. LR: ");
-  Serial.print(x);
-  Serial.print(", UD: ");
-  Serial.println(y);
 }
