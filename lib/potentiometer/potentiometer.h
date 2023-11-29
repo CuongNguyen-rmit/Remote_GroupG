@@ -6,7 +6,4 @@
 #define POT_PIN 34      // Pin 35 attached to the potentiometer
 
 // ================================================================
-// Function declaration
-// ================================================================
-void SerialDataPrintPotentiometer(); // Function to print data on the serial monitor
-void mapPotentiometerValue();
+#define POT_PIN 34
