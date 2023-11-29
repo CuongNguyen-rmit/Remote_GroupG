@@ -7,7 +7,7 @@
 // Define the previous values to detect changes
 int lastLRValue = 0;
 int lastUDValue = 0;
-const int threshold = 100; // Threshold for change detection
+const int threshold = 2; // Threshold for change detection
 
 // Function Declarations
 void Init_Serial();
@@ -27,8 +27,8 @@ void setup()
   Serial.println("Welcome to Drone's Remote Controller");
 
   // Read initial joystick values
-  lastLRValue = analogRead(LR_PIN);
-  lastUDValue = analogRead(UD_PIN);
+  lastLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
+  lastUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
 }
 
 void loop()
@@ -52,17 +52,30 @@ void IRAM_ATTR handleJoystickButtonPress()
 
 void sendDataIfJoystickMoved()
 {
-  int currentLRValue = analogRead(LR_PIN);
-  int currentUDValue = analogRead(UD_PIN);
-  delay(1000);
+  int currentLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
+  int currentUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
   if (abs(currentLRValue - lastLRValue) > threshold || abs(currentUDValue - lastUDValue) > threshold)
   {
-    struct_msg_Send dataToSend;
-    dataToSend.joystickX = currentLRValue; // Assign values as needed
-    dataToSend.joystickY = lastLRValue;
-
-    // Send data
-
-    esp_now_send(broadcastAddress, (uint8_t *)&dataToSend, sizeof(dataToSend));
+    lastLRValue = currentLRValue;
+    lastUDValue = currentUDValue;
+    sendJoystickXY(currentLRValue, currentUDValue);
   }
+}
+
+void sendJoystickXY(int x, int y)
+{
+
+  struct_msg_Send dataToSend;
+  dataToSend.joystickX = x; // Assign values as needed
+  dataToSend.joystickY = y;
+
+  // Send data
+
+  esp_now_send(broadcastAddress, (uint8_t *)&dataToSend, sizeof(dataToSend));
+
+  // For debugging
+  Serial.print("Joystick moved. LR: ");
+  Serial.print(x);
+  Serial.print(", UD: ");
+  Serial.println(y);
 }
