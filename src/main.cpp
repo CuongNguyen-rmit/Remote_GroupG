@@ -1,18 +1,82 @@
 #include <Arduino.h>
+#include <esp_now.h>
+#include "../lib/potentiometer/potentiometer.h"
+#include "../lib/joystick/joystick.h"
+#include "../lib/wireless/wireless.h"
 
-// put function declarations here:
-int myFunction(int, int);
+// Define the previous values to detect changes
+int lastLRValue = 0;
+int lastUDValue = 0;
+const int threshold = 50; // Threshold for change detection
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+// Function Declarations
+void Init_Serial();
+void IRAM_ATTR handleJoystickButtonPress();
+void sendDataIfJoystickMoved();
+void sendJoystickXY(int x, int y);
+
+void setup()
+{
+  Init_Serial();
+  espnow_initialize();
+  pinMode(LR_PIN, INPUT);
+  pinMode(UD_PIN, INPUT);
+  pinMode(SW_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(SW_PIN), handleJoystickButtonPress, FALLING);
+
+  Serial.println("Welcome to Drone's Remote Controller");
+
+  // Read initial joystick values
+  lastLRValue = analogRead(LR_PIN);
+  lastUDValue = analogRead(UD_PIN);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+  sendDataIfJoystickMoved();
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+// Function Definitions
+void Init_Serial()
+{
+  Serial.begin(9600);
+  while (!Serial)
+    ; // Wait for Serial to initialize
+}
+
+void IRAM_ATTR handleJoystickButtonPress()
+{
+  Serial.println("Joystick button pressed");
+  // Add any specific code to handle button press
+}
+
+void sendDataIfJoystickMoved()
+{
+  int currentLRValue = analogRead(LR_PIN);
+  int currentUDValue = analogRead(UD_PIN);
+
+  if (abs(currentLRValue - lastLRValue) > threshold || abs(currentUDValue - lastUDValue) > threshold)
+  {
+    lastLRValue = currentLRValue;
+    lastUDValue = currentUDValue;
+    sendJoystickXY(currentLRValue, currentUDValue);
+  }
+}
+
+void sendJoystickXY(int x, int y)
+{
+
+  struct_msg_Send dataToSend;
+  dataToSend.joystickX = x; // Assign values as needed
+  dataToSend.joystickY = y;
+
+  // Send data
+
+  esp_now_send(broadcastAddress, (uint8_t *)&dataToSend, sizeof(dataToSend));
+
+  // For debugging
+  Serial.print("Joystick moved. LR: ");
+  Serial.print(x);
+  Serial.print(", UD: ");
+  Serial.println(y);
 }
