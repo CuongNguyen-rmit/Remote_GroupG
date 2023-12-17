@@ -24,5 +24,6 @@ void remoteControllerConfig();
 void potentiometerSend(int myVal);
 void buttonDataSend(int myVal);
 void buttonPressed(int val);
+
 int ADC_Read();
 #endif

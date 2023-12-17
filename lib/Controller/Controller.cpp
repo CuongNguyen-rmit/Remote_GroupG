@@ -23,12 +23,12 @@ void buttonInit() {
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { // this is called when data is transmitted
   //Serial.println(">>>>>>>>>>>>>>>");
-//   if(status == ESP_NOW_SEND_SUCCESS) {
-//     Serial.println("Transfer complete");
-//   }
-//   else {
-//     Serial.println("Fail to transmit");
-//   }
+  // if(status == ESP_NOW_SEND_SUCCESS) {
+  //   Serial.println("Transfer complete");
+  // }
+  // else {
+  //   Serial.println("Fail to transmit");
+  // }
 }
 
 void esp_now_config() {
@@ -88,6 +88,7 @@ void buttonPressed(int val) {
   if(button_1.mode == 0) {
     potentiometerSend(val);
     button_1.mode = NONE;
+    Serial.println(val);
   }
   else {
     buttonDataSend(INTERUPT_VAL);
@@ -99,4 +100,6 @@ void remoteControllerConfig() {
   buttonInit();
   esp_now_config();
 }
+
+
 #endif
