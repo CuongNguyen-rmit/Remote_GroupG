@@ -7,8 +7,9 @@ button_t button_1;
 button_message myButton;
 voltage_stuct myPot;
 
-
-
+// ESC struct
+esc_min_val minSignalSender;
+esc_max_val maxSignalSender;
 uint8_t broadcastAddress[] = {0x48,0xE7,0x29,0x93,0xD8,0x24}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
@@ -22,13 +23,7 @@ void buttonInit() {
 }
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) { // this is called when data is transmitted
-  //Serial.println(">>>>>>>>>>>>>>>");
-  // if(status == ESP_NOW_SEND_SUCCESS) {
-  //   Serial.println("Transfer complete");
-  // }
-  // else {
-  //   Serial.println("Fail to transmit");
-  // }
+  
 }
 
 void esp_now_config() {
@@ -101,5 +96,21 @@ void remoteControllerConfig() {
   esp_now_config();
 }
 
+void sendMinSignal(int min) {
+  minSignalSender.minSignal = min;
+  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *) &minSignalSender, sizeof(minSignalSender));
+  if(dataSent == ESP_OK) {
+    Serial.println("Deliver success");
+  }
+  Serial.println(minSignalSender.minSignal);
+}
 
+void sendMaxSignal(int max) {
+  maxSignalSender.maxSignal = max;
+  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *) &maxSignalSender, sizeof(maxSignalSender));
+  if(dataSent == ESP_OK) {
+    Serial.println("Deliver success");
+  }
+  Serial.println(maxSignalSender.maxSignal);
+}
 #endif

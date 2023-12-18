@@ -21,7 +21,7 @@ void calibrationModeWithBattery() {
   waitForKeyStroke();
 }
 
-void calibrationModeWithValue() {
+void calibrationModeEnd() {
   Serial.println();
   Serial.println("Wait for 4 short bips, and one long bip.");
   Serial.println("Press any key to finish.");
