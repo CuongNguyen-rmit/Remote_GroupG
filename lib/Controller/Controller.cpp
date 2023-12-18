@@ -1,4 +1,3 @@
-#if 1
 #include "./Controller.h"
 
 // Variables definitions
@@ -8,8 +7,7 @@ button_message myButton;
 voltage_stuct myPot;
 
 // ESC struct
-esc_min_val minSignalSender;
-esc_max_val maxSignalSender;
+esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
@@ -116,28 +114,18 @@ void remoteControllerConfig()
   esp_now_config();
 }
 
-void sendMinSignal(int min)
+void sendCalSignal(int signalValue, int signalState)
 {
-  minSignalSender.minSignal = min;
-  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&minSignalSender, sizeof(minSignalSender));
+  calSignalSender.signal = signalValue;
+  calSignalSender.state = signalState;
+  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&calSignalSender, sizeof(calSignalSender));
   if (dataSent == ESP_OK)
   {
     Serial.println("Deliver success");
+    Serial.print("signal state: ");
+    Serial.println(calSignalSender.state);
+    Serial.print("signal value: ");
+    Serial.println(calSignalSender.signal);
   }
-  Serial.println(minSignalSender.minSignal);
+
 }
-
-void sendMaxSignal(int max)
-{
-
-  maxSignalSender.maxSignal = max;
-  Serial.println("before send");
-  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&maxSignalSender, sizeof(maxSignalSender));
-  if (dataSent == ESP_OK)
-  {
-
-    Serial.println("Deliver success");
-  }
-  Serial.println(maxSignalSender.maxSignal);
-}
-#endif
