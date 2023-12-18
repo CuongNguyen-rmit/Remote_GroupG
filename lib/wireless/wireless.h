@@ -12,6 +12,14 @@ typedef struct struct_msg_Send_JTButton
     bool pressed;
 } struct_msg_Send_JTButton;
 
+typedef struct struct_msg_Send_Button
+{
+    
+    int buttonNumber;
+    bool pressed;
+    char buttonId[30];
+} struct_msg_Send_Button;
+
 typedef struct struct_msg_Send_POT
 {
     int value;

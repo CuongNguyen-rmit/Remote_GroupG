@@ -6,4 +6,3 @@
 #define POT_PIN 34      // Pin 35 attached to the potentiometer
 
 // ================================================================
-#define POT_PIN 34

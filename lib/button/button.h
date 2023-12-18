@@ -1,0 +1,3 @@
+#define BUTTON_LEFT 33
+#define BUTTON_RIGHT 32
+#define BUTTON_EMERGENCY 25

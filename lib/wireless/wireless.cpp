@@ -8,7 +8,9 @@
 // Variable declaration
 // ******************************************
 // Insert the MAC address of the drone
+// uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24};
 uint8_t broadcastAddress[] = {0xA8, 0x42, 0xE3, 0x45, 0x23, 0xE4};
+// A8:42:E3:45:23:E4
 
 // Variable for espnow communication
 esp_now_peer_info_t peerInfo;
