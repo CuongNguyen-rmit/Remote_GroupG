@@ -153,7 +153,15 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
     Serial.print(" Gyro Y: ");
     Serial.print(imuInfoReceiver.gyroy);
     Serial.print(" Gyro Z: ");
-    Serial.println(imuInfoReceiver.gyroz);
+    Serial.print(imuInfoReceiver.gyroz);
+    Serial.print(" Speed1: ");
+    Serial.print(imuInfoReceiver.motor1Speed);
+    Serial.print(" Speed2: ");
+    Serial.print(imuInfoReceiver.motor2Speed);
+    Serial.print(" Speed3: ");
+    Serial.print(imuInfoReceiver.motor3Speed);
+    Serial.print(" Speed4: ");
+    Serial.print(imuInfoReceiver.motor4Speed);
 
     break;
 
