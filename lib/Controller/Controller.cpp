@@ -6,6 +6,7 @@ button_t button_1;
 button_message myButton;
 voltage_stuct myPot;
 
+imu_struct_receive imuInfoReceiver;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
@@ -37,6 +38,7 @@ void esp_now_config()
   //----------------------------------------Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
   esp_now_register_send_cb(onDataSent); // call back function to getthe sent status into the  ondatasent
+  esp_now_register_recv_cb(onDataReceived);
   //----------------------------------------Register peer
   esp_now_peer_info_t peerInfo = {};
   // memset(&peerInfo, 0, sizeof(peerInfo)); // set peer, it could affect wifi
@@ -127,5 +129,37 @@ void sendCalSignal(int signalValue, int signalState)
     Serial.print("signal value: ");
     Serial.println(calSignalSender.signal);
   }
+}
 
+void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
+  // Serial.println("here");
+  switch (len)
+  {
+  case sizeof(imuInfoReceiver):
+
+    memcpy(&imuInfoReceiver, incomingData, sizeof(imuInfoReceiver));
+    // serial print here
+    // Serial print received data
+    Serial.println("Received IMU data:");
+    Serial.print(" Angle X: ");
+    Serial.print(imuInfoReceiver.anglex);
+    Serial.print(" Angle Y: ");
+    Serial.print(imuInfoReceiver.angley);
+    Serial.print(" Angle Z: ");
+    Serial.print(imuInfoReceiver.anglez);
+    Serial.print(" Gyro X: ");
+    Serial.print(imuInfoReceiver.gyrox);
+    Serial.print(" Gyro Y: ");
+    Serial.print(imuInfoReceiver.gyroy);
+    Serial.print(" Gyro Z: ");
+    Serial.println(imuInfoReceiver.gyroz);
+
+    break;
+
+  default:
+    // Handle unexpected data length
+    Serial.println("Received data of unexpected length.");
+    break;
+  }
 }
