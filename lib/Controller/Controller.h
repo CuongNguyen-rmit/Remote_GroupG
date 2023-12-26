@@ -29,6 +29,12 @@ typedef struct esc_cal_val
     int state;
 } esc_cal_val;
 
+typedef struct sent_pid_tunning {
+    char charSent;
+    char suffCharSent;
+    int id[50];
+} sent_pid_tunning;
+
 void esp_now_config();
 void buttonInit();
 void remoteControllerConfig();
@@ -36,5 +42,6 @@ void potentiometerSend(int myVal);
 void buttonDataSend(int myVal);
 void buttonPressed(int val);
 void sendCalSignal(int signalValue, int signalState); // send min signal to tell esc the calibration value (use in last)
+void sendTunningCommand();
 
 int ADC_Read();

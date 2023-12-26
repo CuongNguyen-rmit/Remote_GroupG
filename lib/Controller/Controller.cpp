@@ -8,6 +8,7 @@ voltage_stuct myPot;
 
 // ESC struct
 esc_cal_val calSignalSender;
+sent_pid_tunning myCommand;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
@@ -112,6 +113,22 @@ void remoteControllerConfig()
 {
   buttonInit();
   esp_now_config();
+}
+
+void sendTunningCommand() {
+  char inChar;
+  char suffChar;
+  while(!Serial.available());
+  inChar = Serial.read();
+  myCommand.charSent = inChar;
+  while(!Serial.available());
+  myCommand.suffCharSent = Serial.read();
+  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myCommand, sizeof(myCommand));
+  if(dataSent == ESP_OK) {
+    Serial.println("Deliver success");
+    Serial.print("Character sent: ");
+    Serial.println(myCommand.charSent);
+  }
 }
 
 void sendCalSignal(int signalValue, int signalState)
