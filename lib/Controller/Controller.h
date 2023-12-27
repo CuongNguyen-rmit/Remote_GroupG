@@ -1,6 +1,7 @@
 
 #include <ESP32Servo.h>
 #include <esp32_button.h>
+#include "../joystick/joystick.h"
 #include <esp_now.h>
 #include <WiFi.h>
 #define BUTTON_1_PIN 33
@@ -52,7 +53,16 @@ typedef struct joystick_struct_receiver
 
 } joystick_struct_receiver;
 
+typedef struct joystick_struct_sender
+{
+    float joystickx; // j in the X direction
+    float joysticky; // j in the Y direction
+    char id[10];
+
+} joystick_struct_sender;
+
 extern imu_struct_receive imuInfoReceiver;
+extern joystick_struct_sender joystickSender;
 
 void esp_now_config();
 void buttonInit();
@@ -63,3 +73,5 @@ void acctionsHanlder(int val);
 void sendCalSignal(int signalValue, int signalState); // send min signal to tell esc the calibration value (use in last)
 void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len);
 int ADC_Read();
+void sendDataIfJoystickMoved();
+void sendJoystickXY(int x, int y);

@@ -8,6 +8,7 @@ voltage_stuct myPot;
 
 imu_struct_receive imuInfoReceiver;
 joystick_struct_receiver joystickReceiver;
+joystick_struct_sender joystickSender;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
@@ -101,11 +102,13 @@ void acctionsHanlder(int val)
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
+    sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
   else
   {
     buttonDataSend(INTERUPT_VAL);
+
     button_1.mode = NONE;
   }
 }
@@ -113,6 +116,7 @@ void acctionsHanlder(int val)
 void remoteControllerConfig()
 {
   buttonInit();
+  joystickInit();
   esp_now_config();
 }
 
@@ -147,4 +151,34 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
     // Serial.println("Received data of unexpected length.");
     break;
   }
+}
+
+void sendDataIfJoystickMoved()
+{
+
+  int currentLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
+  int currentUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
+  Serial.println(currentLRValue);
+  Serial.println(currentUDValue);
+  if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
+  {
+    Serial.print("Joystick X: ");
+    Serial.print(currentLRValue);
+    Serial.print(", Joystick Y: ");
+    Serial.println(currentLRValue);
+    lastLRValue = currentLRValue;
+    lastUDValue = currentLRValue;
+    sendJoystickXY(currentLRValue, currentUDValue);
+  }
+}
+
+void sendJoystickXY(int x, int y)
+{
+
+  joystickSender.joystickx = x;
+  joystickSender.joysticky = y;
+
+  // Send data
+
+  esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
 }
