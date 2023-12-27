@@ -2,9 +2,10 @@
 #include <Calibration.h>
 void setup()
 {
+  Serial.begin(115200);
   remoteControllerConfig();
-  // // initialize the esc
-  // // step1: disconnect battery
+  // initialize the esc
+  // step1: disconnect battery
   calibrationModeWithoutBattery();             // tell user calibrate when disconnect battery
   sendCalSignal(MAX_SIGNAL, MAX_SIGNAL_STATE); // send max signal to tell esc enter the calibration mode
 

@@ -21,7 +21,6 @@ void buttonInit()
 {
   button_add_default(&button_1, BUTTON_1_PIN);
   button_init(&button_isr);
-  Serial.begin(115200);
 }
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
@@ -158,14 +157,8 @@ void sendDataIfJoystickMoved()
 
   int currentLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
   int currentUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
-  Serial.println(currentLRValue);
-  Serial.println(currentUDValue);
   if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
   {
-    Serial.print("Joystick X: ");
-    Serial.print(currentLRValue);
-    Serial.print(", Joystick Y: ");
-    Serial.println(currentLRValue);
     lastLRValue = currentLRValue;
     lastUDValue = currentLRValue;
     sendJoystickXY(currentLRValue, currentUDValue);
