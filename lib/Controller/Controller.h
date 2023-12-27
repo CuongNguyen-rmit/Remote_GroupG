@@ -41,7 +41,16 @@ typedef struct imu_struct_receive
     int motor2Speed;
     int motor3Speed;
     int motor4Speed;
+    int baseSpeed;
 } imu_struct_receive;
+
+typedef struct joystick_struct_receiver
+{
+    float joystickx; // j in the X direction
+    float joysticky; // j in the Y direction
+    char id[10];
+
+} joystick_struct_receiver;
 
 extern imu_struct_receive imuInfoReceiver;
 
@@ -50,7 +59,7 @@ void buttonInit();
 void remoteControllerConfig();
 void potentiometerSend(int myVal);
 void buttonDataSend(int myVal);
-void buttonPressed(int val);
+void acctionsHanlder(int val);
 void sendCalSignal(int signalValue, int signalState); // send min signal to tell esc the calibration value (use in last)
 void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len);
 int ADC_Read();

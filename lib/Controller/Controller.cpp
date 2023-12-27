@@ -7,6 +7,7 @@ button_message myButton;
 voltage_stuct myPot;
 
 imu_struct_receive imuInfoReceiver;
+joystick_struct_receiver joystickReceiver;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
@@ -74,13 +75,10 @@ void potentiometerSend(int val)
   {
     myPot.voltageVal = val;
     esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myPot, sizeof(myPot));
-    // if (dataSent == ESP_OK) {
-    //     Serial.println("Deliver success");
-    // }
-
-    Serial.print("pot: ");
-    Serial.println(myPot.voltageVal);
-
+    if (dataSent == ESP_OK)
+    {
+      Serial.println("Pot Deliver success");
+    }
     lastSentVal = val; // Update the last sent value
   }
 }
@@ -96,8 +94,10 @@ void buttonDataSend(int val)
   Serial.println(myButton.button_status);
 }
 
-void buttonPressed(int val)
+void acctionsHanlder(int val)
 {
+  Serial.print("button mode ");
+  Serial.println(button_1.mode);
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
@@ -121,14 +121,6 @@ void sendCalSignal(int signalValue, int signalState)
   calSignalSender.signal = signalValue;
   calSignalSender.state = signalState;
   esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&calSignalSender, sizeof(calSignalSender));
-  if (dataSent == ESP_OK)
-  {
-    Serial.println("Deliver success");
-    Serial.print("signal state: ");
-    Serial.println(calSignalSender.state);
-    Serial.print("signal value: ");
-    Serial.println(calSignalSender.signal);
-  }
 }
 
 void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
@@ -139,35 +131,20 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
   case sizeof(imuInfoReceiver):
 
     memcpy(&imuInfoReceiver, incomingData, sizeof(imuInfoReceiver));
-    // serial print here
-    // Serial print received data
-    Serial.println("Received IMU data:");
-    Serial.print(" Angle X: ");
-    Serial.print(imuInfoReceiver.anglex);
-    Serial.print(" Angle Y: ");
-    Serial.print(imuInfoReceiver.angley);
-    Serial.print(" Angle Z: ");
-    Serial.print(imuInfoReceiver.anglez);
-    Serial.print(" Gyro X: ");
-    Serial.print(imuInfoReceiver.gyrox);
-    Serial.print(" Gyro Y: ");
-    Serial.print(imuInfoReceiver.gyroy);
-    Serial.print(" Gyro Z: ");
-    Serial.print(imuInfoReceiver.gyroz);
-    Serial.print(" Speed1: ");
-    Serial.print(imuInfoReceiver.motor1Speed);
-    Serial.print(" Speed2: ");
-    Serial.print(imuInfoReceiver.motor2Speed);
-    Serial.print(" Speed3: ");
-    Serial.print(imuInfoReceiver.motor3Speed);
-    Serial.print(" Speed4: ");
-    Serial.print(imuInfoReceiver.motor4Speed);
+    break;
+
+  case sizeof(joystickReceiver):
+    memcpy(&joystickReceiver, incomingData, sizeof(joystickReceiver));
+    Serial.print("Joyx: ");
+    Serial.print(joystickReceiver.joystickx);
+    Serial.print(" Joyy: ");
+    Serial.println(joystickReceiver.joysticky);
 
     break;
 
   default:
     // Handle unexpected data length
-    Serial.println("Received data of unexpected length.");
+    // Serial.println("Received data of unexpected length.");
     break;
   }
 }
