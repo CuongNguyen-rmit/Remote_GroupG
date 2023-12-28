@@ -6,9 +6,11 @@ button_t button_1;
 button_message myButton;
 voltage_stuct myPot;
 
+imu_struct_receive imuInfoReceiver;
+joystick_struct_receiver joystickReceiver;
+joystick_struct_sender joystickSender;
 // ESC struct
 esc_cal_val calSignalSender;
-sent_pid_tunning myCommand;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
@@ -19,7 +21,6 @@ void buttonInit()
 {
   button_add_default(&button_1, BUTTON_1_PIN);
   button_init(&button_isr);
-  Serial.begin(115200);
 }
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
@@ -38,6 +39,7 @@ void esp_now_config()
   //----------------------------------------Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
   esp_now_register_send_cb(onDataSent); // call back function to getthe sent status into the  ondatasent
+  esp_now_register_recv_cb(onDataReceived);
   //----------------------------------------Register peer
   esp_now_peer_info_t peerInfo = {};
   // memset(&peerInfo, 0, sizeof(peerInfo)); // set peer, it could affect wifi
@@ -73,13 +75,10 @@ void potentiometerSend(int val)
   {
     myPot.voltageVal = val;
     esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myPot, sizeof(myPot));
-    // if (dataSent == ESP_OK) {
-    //     Serial.println("Deliver success");
-    // }
-
-    Serial.print("pot: ");
-    Serial.println(myPot.voltageVal);
-
+    if (dataSent == ESP_OK)
+    {
+      Serial.println("Pot Deliver success");
+    }
     lastSentVal = val; // Update the last sent value
   }
 }
@@ -95,16 +94,20 @@ void buttonDataSend(int val)
   Serial.println(myButton.button_status);
 }
 
-void buttonPressed(int val)
+void acctionsHanlder(int val)
 {
+  Serial.print("button mode ");
+  Serial.println(button_1.mode);
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
+    sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
   else
   {
     buttonDataSend(INTERUPT_VAL);
+
     button_1.mode = NONE;
   }
 }
@@ -112,37 +115,64 @@ void buttonPressed(int val)
 void remoteControllerConfig()
 {
   buttonInit();
+  joystickInit();
   esp_now_config();
 }
 
-void sendTunningCommand() {
-  char inChar;
-  char suffChar;
-  while(!Serial.available());
-  inChar = Serial.read();
-  myCommand.charSent = inChar;
-  while(!Serial.available());
-  myCommand.suffCharSent = Serial.read();
-  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myCommand, sizeof(myCommand));
-  if(dataSent == ESP_OK) {
-    Serial.println("Deliver success");
-    Serial.print("Character sent: ");
-    Serial.println(myCommand.charSent);
-  }
-}
 
 void sendCalSignal(int signalValue, int signalState)
 {
   calSignalSender.signal = signalValue;
   calSignalSender.state = signalState;
   esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&calSignalSender, sizeof(calSignalSender));
-  if (dataSent == ESP_OK)
-  {
-    Serial.println("Deliver success");
-    Serial.print("signal state: ");
-    Serial.println(calSignalSender.state);
-    Serial.print("signal value: ");
-    Serial.println(calSignalSender.signal);
-  }
+}
 
+void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
+  // Serial.println("here");
+  switch (len)
+  {
+  case sizeof(imuInfoReceiver):
+
+    memcpy(&imuInfoReceiver, incomingData, sizeof(imuInfoReceiver));
+    break;
+
+  case sizeof(joystickReceiver):
+    memcpy(&joystickReceiver, incomingData, sizeof(joystickReceiver));
+    Serial.print("Joyx: ");
+    Serial.print(joystickReceiver.joystickx);
+    Serial.print(" Joyy: ");
+    Serial.println(joystickReceiver.joysticky);
+
+    break;
+
+  default:
+    // Handle unexpected data length
+    // Serial.println("Received data of unexpected length.");
+    break;
+  }
+}
+
+void sendDataIfJoystickMoved()
+{
+
+  int currentLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
+  int currentUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
+  if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
+  {
+    lastLRValue = currentLRValue;
+    lastUDValue = currentLRValue;
+    sendJoystickXY(currentLRValue, currentUDValue);
+  }
+}
+
+void sendJoystickXY(int x, int y)
+{
+
+  joystickSender.joystickx = x;
+  joystickSender.joysticky = y;
+
+  // Send data
+
+  esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
 }
