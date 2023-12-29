@@ -18,6 +18,8 @@ void setup()
 void loop()
 {
   acctionsHanlder(ADC_Read());
+  menuPrompt();
+  tunningCommandSend();
   // Serial.print("Received IMU data:");
   // Serial.print(" Angle X: ");
   // Serial.print(imuInfoReceiver.anglex);

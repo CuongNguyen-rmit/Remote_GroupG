@@ -9,6 +9,7 @@ voltage_stuct myPot;
 imu_struct_receive imuInfoReceiver;
 joystick_struct_receiver joystickReceiver;
 joystick_struct_sender joystickSender;
+tunning_struct_send tunningSender;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
@@ -175,4 +176,19 @@ void sendJoystickXY(int x, int y)
   // Send data
 
   esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
+}
+
+void tunningCommandSend() {
+  tunningSender.kpPitch = kp_pitch;
+  tunningSender.kiPitch = ki_pitch;
+  tunningSender.kdPitch = kd_pitch;
+
+  tunningSender.kpRoll = kp_roll;
+  tunningSender.kiRoll = ki_roll;
+  tunningSender.kdRoll = kd_roll;
+
+  tunningSender.kpYaw = kp_yaw;
+  tunningSender.kiYaw = ki_yaw;
+  tunningSender.kdYaw = kd_yaw;
+  esp_now_send(broadcastAddress, (uint8_t *)&tunningSender, sizeof(tunningSender));
 }
