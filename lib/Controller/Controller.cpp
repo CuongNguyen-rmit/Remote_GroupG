@@ -1,4 +1,5 @@
-#include "./Controller.h"
+#include <Controller.h>
+#include <tunning.h>
 
 // Variables definitions
 int potPin = 34;
@@ -97,8 +98,7 @@ void buttonDataSend(int val)
 
 void acctionsHanlder(int val)
 {
-  Serial.print("button mode ");
-  Serial.println(button_1.mode);
+
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
