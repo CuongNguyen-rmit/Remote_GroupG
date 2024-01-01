@@ -1,5 +1,6 @@
 #include <Controller.h>
 #include <Calibration.h>
+#include <tunning.h>
 void setup()
 {
   Serial.begin(115200);
@@ -9,7 +10,7 @@ void setup()
   calibrationModeWithoutBattery();             // tell user calibrate when disconnect battery
   sendCalSignal(MAX_SIGNAL, MAX_SIGNAL_STATE); // send max signal to tell esc enter the calibration mode
 
-  // // Step 2: connect battery
+  // Step 2: connect battery
   calibrationModeWithBattery();                // tell user calibrate with battery
   sendCalSignal(MIN_SIGNAL, MIN_SIGNAL_STATE); // send min signal to tell esc the calibrate value
   calibrationModeEnd();                        // tell user wait for the beep sound then controll with pot
@@ -17,7 +18,17 @@ void setup()
 
 void loop()
 {
-  acctionsHanlder(ADC_Read());
+  // int userChoice = welcomeMenu();
+  while(Serial.available() == 0) {
+    acctionsHanlder(ADC_Read());
+  }
+  if(welcomeMenu()) {
+    menuPrompt();
+    displayTunningValue();
+    tunningCommandSend();
+  }
+
+  delay(100);
   // Serial.print("Received IMU data:");
   // Serial.print(" Angle X: ");
   // Serial.print(imuInfoReceiver.anglex);

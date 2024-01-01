@@ -61,6 +61,12 @@ typedef struct joystick_struct_sender
 
 } joystick_struct_sender;
 
+typedef struct tunning_struct_send {
+    float kpPitch,kdPitch,kiPitch;
+    float kpRoll,kdRoll,kiRoll;
+    float kpYaw,kdYaw,kiYaw;
+} tunning_struct_send;
+
 extern imu_struct_receive imuInfoReceiver;
 extern joystick_struct_sender joystickSender;
 
@@ -75,3 +81,4 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len);
 int ADC_Read();
 void sendDataIfJoystickMoved();
 void sendJoystickXY(int x, int y);
+void tunningCommandSend();
