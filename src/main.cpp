@@ -24,9 +24,7 @@ void loop()
     menuPrompt();
     displayTunningValue();
   }
-  else {
-    //acctionsHanlder(ADC_Read());
-  }
   tunningCommandSend();
+  acctionsHanlder(ADC_Read());
   delay(100);
 }

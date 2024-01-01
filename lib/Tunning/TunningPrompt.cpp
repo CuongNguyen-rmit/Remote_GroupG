@@ -113,19 +113,19 @@ void setTunning(int flag) {
 
 void pitchTunning(int flag) {
     while(1) {
-        // Serial.println("\n\n====================================");
-        // Serial.println("|          Tuning PID Axis          |");
-        // Serial.println("|----------------------------------|");
-        // Serial.println("| To select the constant to tune:  |");
-        // Serial.println("| 1. Type the command as follows:  |");
-        // Serial.println("|    Ka                            |");
-        // Serial.println("|----------------------------------|");
-        // Serial.println("| K = PID constant (p, i, d)       |");
-        // Serial.println("| a = Value to tune (1,2,3,...)    |");
-        // Serial.println("|----------------------------------|");
-        // Serial.println("| Example:                         |");
-        // Serial.println("| Tune Kp to 3: Type 'p3'          |");
-        // Serial.println("====================================");
+        Serial.println("\n\n====================================");
+        Serial.println("|          Tuning PID Axis          |");
+        Serial.println("|----------------------------------|");
+        Serial.println("| To select the constant to tune:  |");
+        Serial.println("| 1. Type the command as follows:  |");
+        Serial.println("|    Ka                            |");
+        Serial.println("|----------------------------------|");
+        Serial.println("| K = PID constant (p, i, d)       |");
+        Serial.println("| a = Value to tune (1,2,3,...)    |");
+        Serial.println("|----------------------------------|");
+        Serial.println("| Example:                         |");
+        Serial.println("| Tune Kp to 3: Type 'p3'          |");
+        Serial.println("====================================");
         setTunning(flag); // this function logically set the tunning
         // Apply the new settings to the Pitch axis control
         // UpdatePIDController(Kp_pitch, Ki_pitch, Kd_pitch);
@@ -183,7 +183,6 @@ int welcomeMenu() {
             return 1;
         }
     }
-    delay(100);
     return 0;
 }
 
