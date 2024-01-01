@@ -13,3 +13,5 @@ void menuPrompt();
 void pitchTunning(int flag);
 double extractNumber(const char * input);
 void setTunning(int flag); // the flag is used to check which axis is selected
+int welcomeMenu();
+void displayTunningValue();

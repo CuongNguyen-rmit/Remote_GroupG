@@ -102,6 +102,7 @@ void acctionsHanlder(int val)
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
+    //Serial.println("ok");
     sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }

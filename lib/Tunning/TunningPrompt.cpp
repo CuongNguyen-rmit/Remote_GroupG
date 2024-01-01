@@ -10,10 +10,13 @@ void menuPrompt() {
     Serial.println("1. Pitch");
     Serial.println("2. Roll");
     Serial.println("3. Yaw");
+    Serial.println("4. Exit");
 
-    waitForKeyStroke(); // Wait for user input
+    while(Serial.available() == 0);
 
     int choice = Serial.parseInt(); // Read user choice
+    Serial.print("choice is: ");
+    Serial.println(choice);
     int pidFlag = 0;
     switch (choice) {
         case 1:
@@ -27,6 +30,8 @@ void menuPrompt() {
         case 3:
             // PID tuning for Yaw
             pitchTunning(YAW_FLAG);
+            break;
+        case 4:
             break;
         default:
             Serial.println("Invalid choice. Please select 1, 2, or 3.");
@@ -52,6 +57,7 @@ double extractNumber(const char* input) {
 }
 
 void setTunning(int flag) {
+    while(Serial.available() < 2); // wait for input 2 characters
     if (Serial.available()) {
         char inputStr[32];
         int i = 0;
@@ -102,26 +108,30 @@ void setTunning(int flag) {
                 }
                 break;
         }
-        // Prompt for next input
-        Serial.println("\nEnter next PID tuning command:");
     }
 }
 
 void pitchTunning(int flag) {
     while(1) {
-        Serial.println("\nTuning PID Axis:");
-        Serial.println("To select the constant to tune.\nPlease type the command following this format: Ka");
-        Serial.println("==========================");
-        Serial.println("K is the pid constant u must type the char included here: (p,i,d)");
-        Serial.println("a is the value u want to tune that constant: 1,2,3,....");
-        Serial.println("Example: Tunning kp to 3: p3.");
-        Serial1.println("==============================");
+        // Serial.println("\n\n====================================");
+        // Serial.println("|          Tuning PID Axis          |");
+        // Serial.println("|----------------------------------|");
+        // Serial.println("| To select the constant to tune:  |");
+        // Serial.println("| 1. Type the command as follows:  |");
+        // Serial.println("|    Ka                            |");
+        // Serial.println("|----------------------------------|");
+        // Serial.println("| K = PID constant (p, i, d)       |");
+        // Serial.println("| a = Value to tune (1,2,3,...)    |");
+        // Serial.println("|----------------------------------|");
+        // Serial.println("| Example:                         |");
+        // Serial.println("| Tune Kp to 3: Type 'p3'          |");
+        // Serial.println("====================================");
         setTunning(flag); // this function logically set the tunning
         // Apply the new settings to the Pitch axis control
         // UpdatePIDController(Kp_pitch, Ki_pitch, Kd_pitch);
 
-        Serial.println("Would you like to tune another constant? (yes/no)");
-        while (!Serial.available());
+        Serial.println("Would you like to tune another constant? (ye/no)");
+        while (Serial.available() < 2);
         String response = Serial.readStringUntil('\n');
         if (response.equalsIgnoreCase("no")) {
             // Exit or return to the main menu
@@ -132,4 +142,76 @@ void pitchTunning(int flag) {
         }
     }
     menuPrompt(); // when user presses the exit key in the menuprompt, it will exit this function
+}
+
+int welcomeMenu() {
+    // Displaying the menu with a frame
+    Serial.println("***********************");
+    Serial.println("*    PID Tuning Menu  *");
+    Serial.println("*---------------------*");
+    Serial.println("* Do you want to tune *");
+    Serial.println("* the PID? (Y/N):     *");
+    Serial.println("***********************");
+
+    // Check if data is available to read
+    while(Serial.available() == 0);
+    if (Serial.available() > 0) {
+        // Read the incoming byte
+        char choice = Serial.read();
+
+        // Clear the Serial buffer
+        while (Serial.available() > 0) Serial.read();
+
+        // Converting to uppercase in case the user enters lowercase
+        choice = toupper(choice);
+
+        // Processing user choice
+        if (choice == 'Y') {
+            Serial.println("You have chosen to tune the PID.\n***************\n");
+            return 1;
+            // Here, you can add the code or function call for PID tuning.
+            
+            // End or reset the program as needed
+        } else if (choice == 'N') {
+            Serial.println("You have chosen not to tune the PID.\n***************\n");
+            return 0;
+            // Here, you can add any alternative action.
+            
+            // End or reset the program as needed
+        } else {
+            Serial.println("Invalid choice entered. Please enter Y or N.");
+            return 1;
+        }
+    }
+    delay(100);
+    return 0;
+}
+
+void displayTunningValue() {
+    Serial.println("PID Tuning Values");
+    Serial.println("================================");
+    
+    // Headers
+    Serial.println("      | Pitch    | Roll     ");
+    Serial.println("--------------------------------");
+
+    // Row for Kp
+    Serial.print("Kp    | ");
+    Serial.print(kp_pitch);
+    Serial.print("   | ");
+    Serial.println(kp_roll);
+
+    // Row for Kd
+    Serial.print("Kd    | ");
+    Serial.print(kd_pitch);
+    Serial.print("   | ");
+    Serial.println(kd_roll);
+
+    // Row for Ki
+    Serial.print("Ki    | ");
+    Serial.print(ki_pitch);
+    Serial.print("   | ");
+    Serial.println(ki_roll);
+
+    Serial.println("================================");
 }
