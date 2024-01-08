@@ -21,6 +21,11 @@ void loop()
   // int userChoice = welcomeMenu();
   while(Serial.available() == 0) {
     acctionsHanlder(ADC_Read());
+    // Serial.print(imuInfoReceiver.gyrox);
+    // Serial.print(" ");
+    // Serial.println(imuInfoReceiver.motor2Speed);
+    // Serial.print(" ");
+    // Serial.println(imuInfoReceiver.motor3Speed);
   }
   if(welcomeMenu()) {
     menuPrompt();
