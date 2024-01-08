@@ -63,7 +63,7 @@ double extractNumber(const char *input)
 
 void readTunningValue(int flag)
 {
-    while (Serial.available() < 2)
+    while (Serial.available() < 5)
         ; // wait for input 2 characters
     if (Serial.available())
     {
