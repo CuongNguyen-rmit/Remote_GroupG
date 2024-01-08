@@ -8,10 +8,10 @@ extern double kp_pitch, kd_pitch, ki_pitch;
 extern double kp_roll, kd_roll, ki_roll;
 extern double kp_yaw, kd_yaw, ki_yaw;
 void menuPrompt();
-// the flag is used to check which axis is selected 
+// the flag is used to check which axis is selected
 // This function create menu for user to tunning
-void pitchTunning(int flag);
-double extractNumber(const char * input);
-void setTunning(int flag); // the flag is used to check which axis is selected
+void readTunningValue(int flag);
+double extractNumber(const char *input);
+void tunningMenu(int flag); // the flag is used to check which axis is selected
 int welcomeMenu();
 void displayTunningValue();

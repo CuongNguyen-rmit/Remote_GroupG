@@ -77,10 +77,10 @@ void potentiometerSend(int val)
   {
     myPot.voltageVal = val;
     esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myPot, sizeof(myPot));
-    if (dataSent == ESP_OK)
-    {
-      Serial.println("Pot Deliver success");
-    }
+    // if (dataSent == ESP_OK)
+    // {
+    //   Serial.println("Pot Deliver success");
+    // }
     lastSentVal = val; // Update the last sent value
   }
 }
