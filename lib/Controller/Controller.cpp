@@ -102,7 +102,7 @@ void acctionsHanlder(int val)
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
-    //Serial.println("ok");
+    //Serial.println(F("ok"));
     sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
@@ -163,7 +163,7 @@ void sendDataIfJoystickMoved()
   if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
   {
     lastLRValue = currentLRValue;
-    lastUDValue = currentLRValue;
+    lastUDValue = currentUDValue;
     sendJoystickXY(currentLRValue, currentUDValue);
   }
 }
