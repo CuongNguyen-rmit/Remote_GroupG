@@ -21,17 +21,18 @@ void loop()
   int userChoice = welcomeMenu();
   while(Serial.available() == 0) {
     acctionsHanlder(ADC_Read());
-    Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
-    Serial.print(imuInfoReceiver.baseSpeed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor1Speed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor2Speed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor3Speed);
-    Serial.print("         | ");
-    Serial.println(imuInfoReceiver.motor4Speed);
-    Serial.println(kp_pitch);
+    // Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
+    // Serial.print(imuInfoReceiver.baseSpeed);
+    // Serial.print("         | ");
+    // Serial.print(imuInfoReceiver.motor1Speed);
+    // Serial.print("         | ");
+    // Serial.print(imuInfoReceiver.motor2Speed);
+    // Serial.print("         | ");
+    // Serial.print(imuInfoReceiver.motor3Speed);
+    // Serial.print("         | ");
+    // Serial.println(imuInfoReceiver.motor4Speed);
+    // Serial.println(kp_pitch);
+
     delay(500);
   }
   if(welcomeMenu()) {

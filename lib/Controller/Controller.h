@@ -4,6 +4,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #define BUTTON_1_PIN 33
+#define BUTTON_2_PIN 32
+#define BUTTON_3_PIN 25 // Stop Button
 #define INTERUPT_VAL 200
 #define MIN_SIGNAL 1000
 #define MAX_SIGNAL 2000

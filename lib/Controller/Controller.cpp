@@ -98,16 +98,16 @@ void buttonDataSend(int val)
 
 void acctionsHanlder(int val)
 {
-
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
-    //Serial.println(F("ok"));
+    Serial.println("ok1");
     sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
   else
   {
+    Serial.println("Please work");
     buttonDataSend(INTERUPT_VAL);
 
     button_1.mode = NONE;
