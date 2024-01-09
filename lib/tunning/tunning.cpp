@@ -3,6 +3,7 @@
 double kp_pitch, kd_pitch, ki_pitch;
 double kp_roll, kd_roll, ki_roll;
 double kp_yaw, kd_yaw, ki_yaw;
+int tunning_state;
 
 void menuPrompt()
 {
@@ -10,7 +11,8 @@ void menuPrompt()
     Serial.println("1. Pitch");
     Serial.println("2. Roll");
     Serial.println("3. Yaw");
-    Serial.println("4. Exit");
+    Serial.println("4. Use the init tunning and exit");
+    Serial.println("5. Exit");
 
     while (Serial.available() == 0)
         ;
@@ -23,17 +25,20 @@ void menuPrompt()
     {
     case 1:
         // PID tuning for Pitch
-        readTunningValue(PITCH_FLAG);
+        tunningMenu(PITCH_FLAG);
         break;
     case 2:
         // PID tuning for Roll
-        readTunningValue(ROLL_FLAG);
+        tunningMenu(ROLL_FLAG);
         break;
     case 3:
         // PID tuning for Yaw
-        readTunningValue(YAW_FLAG);
+        tunningMenu(YAW_FLAG);
         break;
     case 4:
+        tunning_state = 0;
+        break;
+    case 5:
         break;
     default:
         Serial.println("Invalid choice. Please select 1, 2, or 3.");
@@ -63,8 +68,7 @@ double extractNumber(const char *input)
 
 void readTunningValue(int flag)
 {
-    while (Serial.available() < 5)
-        ; // wait for input 2 characters
+    while (Serial.available() < 5); // wait for input 2 characters
     if (Serial.available())
     {
         char inputStr[32];
@@ -153,8 +157,7 @@ void tunningMenu(int flag)
         // UpdatePIDController(Kp_pitch, Ki_pitch, Kd_pitch);
 
         Serial.println("Would you like to tune another constant? (ye/no)");
-        while (Serial.available() < 2)
-            ;
+        while (Serial.available() < 2);
         String response = Serial.readStringUntil('\n');
         if (response.equalsIgnoreCase("no"))
         {
