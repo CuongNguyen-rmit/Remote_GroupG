@@ -1,4 +1,3 @@
-
 #include <ESP32Servo.h>
 #include <esp32_button.h>
 #include "../joystick/joystick.h"
@@ -70,12 +69,13 @@ typedef struct tunning_struct_send {
 extern imu_struct_receive imuInfoReceiver;
 extern joystick_struct_sender joystickSender;
 
+
 void esp_now_config();
 void buttonInit();
 void remoteControllerConfig();
 void potentiometerSend(int myVal);
 void buttonDataSend(int myVal);
-void acctionsHanlder(int val);
+void acctionsHanlder(int val); // to controll the action of moving drone
 void sendCalSignal(int signalValue, int signalState); // send min signal to tell esc the calibration value (use in last)
 void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len);
 int ADC_Read();

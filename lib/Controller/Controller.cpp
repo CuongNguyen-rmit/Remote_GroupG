@@ -102,6 +102,7 @@ void acctionsHanlder(int val)
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
+    //Serial.println(F("ok"));
     sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
@@ -119,6 +120,7 @@ void remoteControllerConfig()
   joystickInit();
   esp_now_config();
 }
+
 
 void sendCalSignal(int signalValue, int signalState)
 {
@@ -161,7 +163,7 @@ void sendDataIfJoystickMoved()
   if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
   {
     lastLRValue = currentLRValue;
-    lastUDValue = currentLRValue;
+    lastUDValue = currentUDValue;
     sendJoystickXY(currentLRValue, currentUDValue);
   }
 }
