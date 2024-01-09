@@ -119,8 +119,8 @@ void remoteControllerConfig()
   buttonInit();
   joystickInit();
   esp_now_config();
+  tunningSender.tunningState = 0;
 }
-
 
 void sendCalSignal(int signalValue, int signalState)
 {
@@ -179,7 +179,7 @@ void sendJoystickXY(int x, int y)
   esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
 }
 
-void tunningCommandSend() {
+void tunningCommandSend(int state) {
   tunningSender.kpPitch = kp_pitch;
   tunningSender.kiPitch = ki_pitch;
   tunningSender.kdPitch = kd_pitch;
@@ -191,5 +191,6 @@ void tunningCommandSend() {
   tunningSender.kpYaw = kp_yaw;
   tunningSender.kiYaw = ki_yaw;
   tunningSender.kdYaw = kd_yaw;
+  tunningSender.tunningState = state;
   esp_now_send(broadcastAddress, (uint8_t *)&tunningSender, sizeof(tunningSender));
 }

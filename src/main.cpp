@@ -24,18 +24,20 @@ void loop()
     Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
     Serial.print(imuInfoReceiver.baseSpeed);
     Serial.print("         | ");
-    Serial.println(imuInfoReceiver.motor1Speed);
+    Serial.print(imuInfoReceiver.motor1Speed);
     Serial.print("         | ");
-    Serial.println(imuInfoReceiver.motor2Speed);
+    Serial.print(imuInfoReceiver.motor2Speed);
     Serial.print("         | ");
-    Serial.println(imuInfoReceiver.motor3Speed);
+    Serial.print(imuInfoReceiver.motor3Speed);
     Serial.print("         | ");
     Serial.println(imuInfoReceiver.motor4Speed);
+    Serial.println(kp_pitch);
+    delay(500);
   }
   if(welcomeMenu()) {
     menuPrompt();
     displayTunningValue();
-    tunningCommandSend();
+    tunningCommandSend(tunning_state);
   }
   Serial.println(ADC_Read());
 
