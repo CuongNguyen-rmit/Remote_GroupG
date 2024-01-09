@@ -18,7 +18,7 @@ void setup()
 
 void loop()
 {
-  // int userChoice = welcomeMenu();
+  int userChoice = welcomeMenu();
   while(Serial.available() == 0) {
     acctionsHanlder(ADC_Read());
     Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
@@ -37,8 +37,8 @@ void loop()
     displayTunningValue();
     tunningCommandSend();
   }
+  Serial.println(ADC_Read());
 
-  delay(100);
   // Serial.print("Received IMU data:");
   // Serial.print(" Angle X: ");
   // Serial.print(imuInfoReceiver.anglex);

@@ -13,7 +13,7 @@ joystick_struct_sender joystickSender;
 tunning_struct_send tunningSender;
 // ESC struct
 esc_cal_val calSignalSender;
-uint8_t broadcastAddress[] = {0x48, 0xE7, 0x29, 0x93, 0xD8, 0x24}; // mac address of receiver
+uint8_t broadcastAddress[] = {0xE4, 0x65, 0xB8, 0x20, 0xC1, 0xDC}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
   button_update(&button_1);
