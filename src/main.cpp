@@ -18,7 +18,6 @@ void setup()
 
 void loop()
 {
-  int userChoice = welcomeMenu();
   while(Serial.available() == 0) {
     acctionsHanlder(ADC_Read());
     Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
