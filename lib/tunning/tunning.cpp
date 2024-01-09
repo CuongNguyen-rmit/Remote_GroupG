@@ -25,20 +25,25 @@ void menuPrompt()
     {
     case 1:
         // PID tuning for Pitch
+
         tunningMenu(PITCH_FLAG);
+        tunning_state = 1;
         break;
     case 2:
         // PID tuning for Roll
         tunningMenu(ROLL_FLAG);
+        tunning_state = 1;
         break;
     case 3:
         // PID tuning for Yaw
         tunningMenu(YAW_FLAG);
+        tunning_state = 1;
         break;
     case 4:
         tunning_state = 0;
         break;
     case 5:
+
         break;
     default:
         Serial.println("Invalid choice. Please select 1, 2, or 3.");
@@ -68,7 +73,8 @@ double extractNumber(const char *input)
 
 void readTunningValue(int flag)
 {
-    while (Serial.available() < 5); // wait for input 2 characters
+    while (Serial.available() < 5)
+        ; // wait for input 2 characters
     if (Serial.available())
     {
         char inputStr[32];
@@ -157,7 +163,8 @@ void tunningMenu(int flag)
         // UpdatePIDController(Kp_pitch, Ki_pitch, Kd_pitch);
 
         Serial.println("Would you like to tune another constant? (ye/no)");
-        while (Serial.available() < 2);
+        while (Serial.available() < 2)
+            ;
         String response = Serial.readStringUntil('\n');
         if (response.equalsIgnoreCase("no"))
         {
@@ -222,34 +229,4 @@ int welcomeMenu()
     }
     delay(100);
     return 0;
-}
-
-void displayTunningValue()
-{
-    Serial.println("PID Tuning Values");
-    Serial.println("================================");
-
-    // Headers
-    Serial.println("      | Pitch    | Roll     ");
-    Serial.println("--------------------------------");
-
-    // Row for Kp
-    Serial.print("Kp    | ");
-    Serial.print(kp_pitch);
-    Serial.print("   | ");
-    Serial.println(kp_roll);
-
-    // Row for Kd
-    Serial.print("Kd    | ");
-    Serial.print(kd_pitch);
-    Serial.print("   | ");
-    Serial.println(kd_roll);
-
-    // Row for Ki
-    Serial.print("Ki    | ");
-    Serial.print(ki_pitch);
-    Serial.print("   | ");
-    Serial.println(ki_roll);
-
-    Serial.println("================================");
 }

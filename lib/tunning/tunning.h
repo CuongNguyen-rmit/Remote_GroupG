@@ -15,4 +15,3 @@ void readTunningValue(int flag);
 double extractNumber(const char *input);
 void tunningMenu(int flag); // the flag is used to check which axis is selected
 int welcomeMenu();
-void displayTunningValue();

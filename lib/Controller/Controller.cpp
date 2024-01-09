@@ -11,6 +11,9 @@ imu_struct_receive imuInfoReceiver;
 joystick_struct_receiver joystickReceiver;
 joystick_struct_sender joystickSender;
 tunning_struct_send tunningSender;
+tunning_value_receive pid_info_receive;
+
+int isStopped;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0xE4, 0x65, 0xB8, 0x20, 0xC1, 0xDC}; // mac address of receiver
@@ -21,8 +24,9 @@ void IRAM_ATTR button_isr()
 
 void buttonInit()
 {
-  button_add_default(&button_1, BUTTON_1_PIN);
+  button_add_default(&button_1, BUTTON_3_PIN);
   button_init(&button_isr);
+  isStopped = 0;
 }
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
@@ -87,13 +91,12 @@ void potentiometerSend(int val)
 
 void buttonDataSend(int val)
 {
-  myButton.button_status = val;
-  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myButton, sizeof(myPot));
+  myButton.state = val;
+  esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&myButton, sizeof(myButton));
   if (dataSent == ESP_OK)
   {
     Serial.println("Deliver success");
   }
-  Serial.println(myButton.button_status);
 }
 
 void acctionsHanlder(int val)
@@ -102,14 +105,22 @@ void acctionsHanlder(int val)
   if (button_1.mode == 0)
   {
     potentiometerSend(val);
-    //Serial.println(F("ok"));
+    // Serial.println(F("ok"));
     sendDataIfJoystickMoved();
     button_1.mode = NONE;
   }
   else
   {
-    buttonDataSend(INTERUPT_VAL);
-
+    if (isStopped == 0)
+    {
+      buttonDataSend(STOP);
+      isStopped = 1;
+    }
+    else
+    {
+      buttonDataSend(START);
+      isStopped = 0;
+    }
     button_1.mode = NONE;
   }
 }
@@ -147,6 +158,10 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
     Serial.println(joystickReceiver.joysticky);
 
     break;
+  case sizeof(pid_info_receive):
+    memcpy(&pid_info_receive, incomingData, sizeof(pid_info_receive));
+    displayTunningValue(pid_info_receive);
+    break;
 
   default:
     // Handle unexpected data length
@@ -179,7 +194,8 @@ void sendJoystickXY(int x, int y)
   esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
 }
 
-void tunningCommandSend(int state) {
+void tunningCommandSend(int state)
+{
   tunningSender.kpPitch = kp_pitch;
   tunningSender.kiPitch = ki_pitch;
   tunningSender.kdPitch = kd_pitch;
@@ -192,5 +208,37 @@ void tunningCommandSend(int state) {
   tunningSender.kiYaw = ki_yaw;
   tunningSender.kdYaw = kd_yaw;
   tunningSender.tunningState = state;
+  Serial.println("send data of pid to drone");
   esp_now_send(broadcastAddress, (uint8_t *)&tunningSender, sizeof(tunningSender));
+}
+
+void displayTunningValue(tunning_value_receive pid_data)
+{
+
+  Serial.println("PID Tuning Values");
+  Serial.println("================================");
+
+  // Headers
+  Serial.println("      | Pitch    | Roll     ");
+  Serial.println("--------------------------------");
+
+  // Row for Kp
+  Serial.print("Kp    | ");
+  Serial.print(pid_info_receive.kp_pitch);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.kp_roll);
+
+  // Row for Kd
+  Serial.print("Kd    | ");
+  Serial.print(pid_info_receive.kd_pitch);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.kd_roll);
+
+  // Row for Ki
+  Serial.print("Ki    | ");
+  Serial.print(pid_info_receive.ki_pitch);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.ki_roll);
+
+  Serial.println("================================");
 }

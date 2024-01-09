@@ -18,7 +18,8 @@ void setup()
 
 void loop()
 {
-  while(Serial.available() == 0) {
+  while (Serial.available() == 0)
+  {
     acctionsHanlder(ADC_Read());
     Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
     Serial.print(imuInfoReceiver.baseSpeed);
@@ -30,39 +31,13 @@ void loop()
     Serial.print(imuInfoReceiver.motor3Speed);
     Serial.print("         | ");
     Serial.println(imuInfoReceiver.motor4Speed);
-    Serial.println(kp_pitch);
     delay(500);
   }
-  if(welcomeMenu()) {
+  if (welcomeMenu())
+  {
     menuPrompt();
-    displayTunningValue();
     tunningCommandSend(tunning_state);
   }
   Serial.println(ADC_Read());
-
-  // Serial.print("Received IMU data:");
-  // Serial.print(" Angle X: ");
-  // Serial.print(imuInfoReceiver.anglex);
-  // Serial.print(" Angle Y: ");
-  // Serial.print(imuInfoReceiver.angley);
-  // Serial.print(" Angle Z: ");
-  // Serial.print(imuInfoReceiver.anglez);
-  // Serial.print(" Gyro X: ");
-  // Serial.print(imuInfoReceiver.gyrox);
-  // Serial.print(" Gyro Y: ");
-  // Serial.print(imuInfoReceiver.gyroy);
-  // Serial.print(" Gyro Z: ");
-  // Serial.print(imuInfoReceiver.gyroz);
-  // Serial.print(" Speed1: ");
-  // Serial.print(imuInfoReceiver.motor1Speed);
-  // Serial.print(" Speed2: ");
-  // Serial.print(imuInfoReceiver.motor2Speed);
-  // Serial.print(" Speed3: ");
-  // Serial.print(imuInfoReceiver.motor3Speed);
-  // Serial.print(" Speed4: ");
-  // Serial.print(imuInfoReceiver.motor4Speed);
-  // Serial.print(" BaseSpeed: ");
-  // Serial.println(imuInfoReceiver.baseSpeed);
-
   delay(100);
 }
