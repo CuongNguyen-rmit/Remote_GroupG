@@ -12,6 +12,7 @@ joystick_struct_receiver joystickReceiver;
 joystick_struct_sender joystickSender;
 tunning_struct_send tunningSender;
 tunning_value_receive pid_info_receive;
+imu_calibrate_receive imuStatusReceive;
 
 int isStopped;
 // ESC struct
@@ -160,7 +161,12 @@ void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
     break;
   case sizeof(pid_info_receive):
     memcpy(&pid_info_receive, incomingData, sizeof(pid_info_receive));
-    displayTunningValue(pid_info_receive);
+    displayTunningValue();
+    break;
+  case sizeof(imuStatusReceive):
+    memcpy(&imuStatusReceive, incomingData, sizeof(imuStatusReceive));
+    Serial.print("Status IMU: ");
+    Serial.println(imuStatusReceive.status);
     break;
 
   default:
@@ -212,33 +218,39 @@ void tunningCommandSend(int state)
   esp_now_send(broadcastAddress, (uint8_t *)&tunningSender, sizeof(tunningSender));
 }
 
-void displayTunningValue(tunning_value_receive pid_data)
+void displayTunningValue()
 {
 
   Serial.println("PID Tuning Values");
   Serial.println("================================");
 
   // Headers
-  Serial.println("      | Pitch    | Roll     ");
+  Serial.println("      | Pitch    | Roll     | Yaw     ");
   Serial.println("--------------------------------");
 
   // Row for Kp
   Serial.print("Kp    | ");
   Serial.print(pid_info_receive.kp_pitch);
   Serial.print("   | ");
-  Serial.println(pid_info_receive.kp_roll);
+  Serial.print(pid_info_receive.kp_roll);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.kp_yaw);
 
   // Row for Kd
   Serial.print("Kd    | ");
   Serial.print(pid_info_receive.kd_pitch);
   Serial.print("   | ");
-  Serial.println(pid_info_receive.kd_roll);
+  Serial.print(pid_info_receive.kd_roll);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.kd_yaw);
 
   // Row for Ki
   Serial.print("Ki    | ");
   Serial.print(pid_info_receive.ki_pitch);
   Serial.print("   | ");
-  Serial.println(pid_info_receive.ki_roll);
+  Serial.print(pid_info_receive.ki_roll);
+  Serial.print("   | ");
+  Serial.println(pid_info_receive.ki_yaw);
 
   Serial.println("================================");
 }

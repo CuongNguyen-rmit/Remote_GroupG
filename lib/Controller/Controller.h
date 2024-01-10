@@ -55,6 +55,12 @@ typedef struct imu_struct_receive
     int baseSpeed;
 } imu_struct_receive;
 
+typedef struct imu_calibrate_receive
+{
+    int status;
+    char id[98];
+} imu_calibrate_receive;
+
 typedef struct joystick_struct_receiver
 {
     float joystickx; // j in the X direction
@@ -84,6 +90,7 @@ extern joystick_struct_sender joystickSender;
 extern button_message myButton;
 extern tunning_value_receive pid_info_receive;
 
+
 void esp_now_config();
 void buttonInit();
 void remoteControllerConfig();
@@ -96,4 +103,4 @@ int ADC_Read();
 void sendDataIfJoystickMoved();
 void sendJoystickXY(int x, int y);
 void tunningCommandSend(int state);
-void displayTunningValue(tunning_value_receive pid_data);
+void displayTunningValue();

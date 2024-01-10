@@ -1,8 +1,8 @@
 #include <tunning.h>
 
-double kp_pitch, kd_pitch, ki_pitch;
-double kp_roll, kd_roll, ki_roll;
-double kp_yaw, kd_yaw, ki_yaw;
+double kp_pitch = 0.95, kd_pitch = 0.013, ki_pitch = 0.015;
+double kp_roll = 1.25, kd_roll = 0.006, ki_roll = 0.015;
+double kp_yaw = 1.00, kd_yaw = 0.00, ki_yaw = 0.00;
 int tunning_state;
 
 void menuPrompt()
@@ -73,7 +73,7 @@ double extractNumber(const char *input)
 
 void readTunningValue(int flag)
 {
-    while (Serial.available() < 5)
+    while (Serial.available() < 7)
         ; // wait for input 2 characters
     if (Serial.available())
     {
