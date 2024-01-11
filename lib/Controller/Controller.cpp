@@ -3,7 +3,9 @@
 
 // Variables definitions
 int potPin = 34;
-button_t button_1;
+button_t buttonStop;
+button_t buttonRight;
+button_t buttonLeft;
 button_message myButton;
 voltage_stuct myPot;
 
@@ -13,21 +15,34 @@ joystick_struct_sender joystickSender;
 tunning_struct_send tunningSender;
 tunning_value_receive pid_info_receive;
 imu_calibrate_receive imuStatusReceive;
+yaw_struct_send yaw_signal_send;
 
+// checker declaration
 int isStopped;
+int yawState;
 // ESC struct
 esc_cal_val calSignalSender;
 uint8_t broadcastAddress[] = {0xE4, 0x65, 0xB8, 0x20, 0xC1, 0xDC}; // mac address of receiver
 void IRAM_ATTR button_isr()
 {
-  button_update(&button_1);
+  button_update(&buttonStop);
+  button_update(&buttonLeft);
+  button_update(&buttonRight);
 }
 
 void buttonInit()
 {
-  button_add_default(&button_1, BUTTON_3_PIN);
+  // Init stop button
+  button_add_default(&buttonStop, BUTTON_STOP_PIN);
+
+  // Init right button
+  button_add_default(&buttonRight, BUTTON_RIGHT_PIN);
+
+  // Init left button
+  button_add_default(&buttonLeft, BUTTON_LEFT_PIN);
   button_init(&button_isr);
   isStopped = 0;
+  yawState = YAW_NEUTRAL_STATE;
 }
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
@@ -103,12 +118,12 @@ void buttonDataSend(int val)
 void acctionsHanlder(int val)
 {
 
-  if (button_1.mode == 0)
+  if (buttonStop.mode == 0)
   {
     potentiometerSend(val);
     // Serial.println(F("ok"));
     sendDataIfJoystickMoved();
-    button_1.mode = NONE;
+    buttonStop.mode = NONE;
   }
   else
   {
@@ -122,7 +137,7 @@ void acctionsHanlder(int val)
       buttonDataSend(START);
       isStopped = 0;
     }
-    button_1.mode = NONE;
+    buttonStop.mode = NONE;
   }
 }
 
@@ -132,6 +147,7 @@ void remoteControllerConfig()
   joystickInit();
   esp_now_config();
   tunningSender.tunningState = 0;
+  yaw_signal_send.state = yawState;
 }
 
 void sendCalSignal(int signalValue, int signalState)
@@ -253,4 +269,22 @@ void displayTunningValue()
   Serial.println(pid_info_receive.ki_yaw);
 
   Serial.println("================================");
+}
+
+void sendYawSignal()
+{
+  if (buttonLeft.mode == 1)
+  {
+    yaw_signal_send.state = YAW_LEFT_STATE;
+    esp_now_send(broadcastAddress, (uint8_t *)&yaw_signal_send, sizeof(yaw_signal_send));
+    yaw_signal_send.state = YAW_NEUTRAL_STATE;
+    buttonLeft.mode = NONE;
+  }
+  else if (buttonRight.mode == 1)
+  {
+    yaw_signal_send.state = YAW_RIGHT_STATE;
+    esp_now_send(broadcastAddress, (uint8_t *)&yaw_signal_send, sizeof(yaw_signal_send));
+    yaw_signal_send.state = YAW_NEUTRAL_STATE;
+    buttonRight.mode = NONE;
+  }
 }
