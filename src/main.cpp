@@ -39,11 +39,6 @@ void loop()
   acctionsHanlder(ADC_Read());
   sendYawSignal();
   delay(50);
-  // if (welcomeMenu())
-  // {
-  //   menuPrompt();
-  //   tunningCommandSend(tunning_state);
-  // }
 }
 
 void printIMUData(const imu_struct_receive &imuData)
