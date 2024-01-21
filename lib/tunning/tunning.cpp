@@ -2,7 +2,7 @@
 
 double kp_pitch = 0.95, kd_pitch = 0.013, ki_pitch = 0.015;
 double kp_roll = 1.25, kd_roll = 0.006, ki_roll = 0.015;
-double kp_yaw = 1.00, kd_yaw = 0.00, ki_yaw = 0.00;
+double kp_yaw = 0.75, kd_yaw = 0.00, ki_yaw = 0.00;
 int tunning_state;
 
 void menuPrompt()

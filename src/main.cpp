@@ -20,29 +20,30 @@ void setup()
 
 void loop()
 {
-  while (Serial.available() == 0)
-  {
-    acctionsHanlder(ADC_Read());
-    Serial.println("BaseSpeed | Motor1 | Motor2 | Motor3 | Motor4");
-    Serial.print(imuInfoReceiver.baseSpeed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor1Speed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor2Speed);
-    Serial.print("         | ");
-    Serial.print(imuInfoReceiver.motor3Speed);
-    Serial.print("         | ");
-    Serial.println(imuInfoReceiver.motor4Speed);
-    printIMUData(imuInfoReceiver);
-    delay(500);
-  }
-  if (welcomeMenu())
-  {
-    menuPrompt();
-    tunningCommandSend(tunning_state);
-  }
-  Serial.println(ADC_Read());
-  delay(100);
+  Serial.print(imuInfoReceiver.anglex);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.angley);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.anglez);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.motor1Speed);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.motor2Speed);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.motor3Speed);
+  Serial.print(" ");
+  Serial.print(imuInfoReceiver.motor4Speed);
+  Serial.println(" ");
+
+
+  acctionsHanlder(ADC_Read());
+  sendYawSignal();
+  delay(50);
+  // if (welcomeMenu())
+  // {
+  //   menuPrompt();
+  //   tunningCommandSend(tunning_state);
+  // }
 }
 
 void printIMUData(const imu_struct_receive &imuData)
