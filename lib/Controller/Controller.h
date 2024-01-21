@@ -3,16 +3,22 @@
 #include "../joystick/joystick.h"
 #include <esp_now.h>
 #include <WiFi.h>
-#define BUTTON_1_PIN 33
-#define BUTTON_3_PIN 25
+#define BUTTON_RIGHT_PIN 33
+#define BUTTON_LEFT_PIN 32
+#define BUTTON_STOP_PIN 25
 #define STOP 200
 #define START 300
 #define MIN_SIGNAL 1000
 #define MAX_SIGNAL 2000
 #define MAX_SIGNAL_STATE 1
 #define MIN_SIGNAL_STATE 2
+#define YAW_LEFT_STATE 1
+#define YAW_RIGHT_STATE 2
+#define YAW_NEUTRAL_STATE 0
 
-extern button_t button_1;
+extern button_t buttonStop;
+extern button_t buttonRight;
+extern button_t buttonLeft;
 
 typedef struct button_message
 {
@@ -63,19 +69,25 @@ typedef struct imu_calibrate_receive
 
 typedef struct joystick_struct_receiver
 {
-    float joystickx; // j in the X direction
-    float joysticky; // j in the Y direction
+    int joystickx; // j in the X direction
+    int joysticky; // j in the Y direction
     char id[10];
 
 } joystick_struct_receiver;
 
 typedef struct joystick_struct_sender
 {
-    float joystickx; // j in the X direction
-    float joysticky; // j in the Y direction
+    int joystickx; // j in the X direction
+    int joysticky; // j in the Y direction
     char id[10];
 
 } joystick_struct_sender;
+
+typedef struct yaw_struct_send
+{
+    int state;
+    char id[45];
+} yaw_struct_send;
 
 typedef struct tunning_struct_send
 {
@@ -89,7 +101,7 @@ extern imu_struct_receive imuInfoReceiver;
 extern joystick_struct_sender joystickSender;
 extern button_message myButton;
 extern tunning_value_receive pid_info_receive;
-
+extern yaw_struct_send yaw_signal_send;
 
 void esp_now_config();
 void buttonInit();
@@ -104,3 +116,4 @@ void sendDataIfJoystickMoved();
 void sendJoystickXY(int x, int y);
 void tunningCommandSend(int state);
 void displayTunningValue();
+void sendYawSignal();
