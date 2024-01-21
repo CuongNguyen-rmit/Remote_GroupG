@@ -103,26 +103,18 @@ void buttonDataSend(int val)
 void acctionsHanlder(int val)
 {
 
-  if (button_1.mode == 0)
-  {
-    potentiometerSend(val);
-    sendDataIfJoystickMoved();
-    button_1.mode = NONE;
-  }
-  else
-  {
-    if (isStopped == 0)
-    {
-      buttonDataSend(STOP);
-      isStopped = 1;
+  // Simplify the structure by eliminating nested if-else where possible
+    if (button_1.mode == 0) {
+        potentiometerSend(val);
+        sendDataIfJoystickMoved();
+    } else {
+        // Use a ternary operator for concise code
+        buttonDataSend(isStopped == 0 ? STOP : START);
+        // Toggle isStopped
+        isStopped = (isStopped == 1) ? 0 : 1;
     }
-    else
-    {
-      buttonDataSend(START);
-      isStopped = 0;
-    }
+    
     button_1.mode = NONE;
-  }
 }
 
 void remoteControllerConfig()
@@ -133,58 +125,51 @@ void remoteControllerConfig()
   tunningSender.tunningState = 0;
 }
 
-void sendCalSignal(int signalValue, int signalState)
+void sendCalSignal(int signalValue, int signalState) // send calibration signal
 {
   calSignalSender.signal = signalValue;
   calSignalSender.state = signalState;
   esp_err_t dataSent = esp_now_send(broadcastAddress, (uint8_t *)&calSignalSender, sizeof(calSignalSender));
 }
 
-void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len)
-{
+void onDataReceived(const uint8_t *mac, const uint8_t *incomingData, int len) {
+  // Uncomment this line to print "here" to the serial monitor for debugging
   // Serial.println("here");
-  switch (len)
-  {
-  case sizeof(imuInfoReceiver):
 
-    memcpy(&imuInfoReceiver, incomingData, sizeof(imuInfoReceiver));
-    break;
+  // Switch statement to handle different lengths of data
+  switch (len) {
+    // Case when the length of incoming data matches the size of imuInfoReceiver
+    case sizeof(imuInfoReceiver):
+      // Copy the incoming data into imuInfoReceiver structure
+      memcpy(&imuInfoReceiver, incomingData, sizeof(imuInfoReceiver));
+      break;
 
-  case sizeof(joystickReceiver):
-    memcpy(&joystickReceiver, incomingData, sizeof(joystickReceiver));
-    Serial.print("Joyx: ");
-    Serial.print(joystickReceiver.joystickx);
-    Serial.print(" Joyy: ");
-    Serial.println(joystickReceiver.joysticky);
+    // Case when the length matches the size of joystickReceiver
+    case sizeof(joystickReceiver):
+      // Copy the incoming data into joystickReceiver structure
+      memcpy(&joystickReceiver, incomingData, sizeof(joystickReceiver));
+      break;
 
-    break;
-  case sizeof(pid_info_receive):
-    memcpy(&pid_info_receive, incomingData, sizeof(pid_info_receive));
-    displayTunningValue();
-    break;
-  case sizeof(imuStatusReceive):
-    memcpy(&imuStatusReceive, incomingData, sizeof(imuStatusReceive));
-    Serial.print("Status IMU: ");
-    Serial.println(imuStatusReceive.status);
-    break;
+    // Case when the length matches the size of pid_info_receive
+    case sizeof(pid_info_receive):
+      // Copy the incoming data into pid_info_receive structure
+      memcpy(&pid_info_receive, incomingData, sizeof(pid_info_receive));
+      // Display tuning values (functionality depends on the displayTunningValue function)
+      displayTunningValue();
+      break;
 
-  default:
-    // Handle unexpected data length
-    // Serial.println("Received data of unexpected length.");
-    break;
-  }
-}
+    // Case when the length matches the size of imuStatusReceive
+    case sizeof(imuStatusReceive):
+      // Copy the incoming data into imuStatusReceive structure
+      memcpy(&imuStatusReceive, incomingData, sizeof(imuStatusReceive));
+      break;
 
-void sendDataIfJoystickMoved()
-{
-
-  int currentLRValue = map(analogRead(LR_PIN), 0, 4095, 0, 12);
-  int currentUDValue = map(analogRead(UD_PIN), 0, 4095, 0, 12);
-  if (abs(currentLRValue - lastLRValue) > threshold_joystick || abs(currentUDValue - lastUDValue) > threshold_joystick)
-  {
-    lastLRValue = currentLRValue;
-    lastUDValue = currentUDValue;
-    sendJoystickXY(currentLRValue, currentUDValue);
+    // Default case for any other data length
+    default:
+      // Handle unexpected data length
+      // Uncomment the following line to print a warning message to the serial monitor
+      // Serial.println("Received data of unexpected length.");
+      break;
   }
 }
 
@@ -199,21 +184,29 @@ void sendJoystickXY(int x, int y)
   esp_now_send(broadcastAddress, (uint8_t *)&joystickSender, sizeof(joystickSender));
 }
 
-void tunningCommandSend(int state)
-{
-  tunningSender.kpPitch = kp_pitch;
-  tunningSender.kiPitch = ki_pitch;
-  tunningSender.kdPitch = kd_pitch;
+void tunningCommandSend(int state) {
+  // Set the pitch tuning parameters in the tunningSender structure from the global variables
+  tunningSender.kpPitch = kp_pitch; // Proportional gain for pitch
+  tunningSender.kiPitch = ki_pitch; // Integral gain for pitch
+  tunningSender.kdPitch = kd_pitch; // Derivative gain for pitch
 
-  tunningSender.kpRoll = kp_roll;
-  tunningSender.kiRoll = ki_roll;
-  tunningSender.kdRoll = kd_roll;
+  // Set the roll tuning parameters in the tunningSender structure from the global variables
+  tunningSender.kpRoll = kp_roll;   // Proportional gain for roll
+  tunningSender.kiRoll = ki_roll;   // Integral gain for roll
+  tunningSender.kdRoll = kd_roll;   // Derivative gain for roll
 
-  tunningSender.kpYaw = kp_yaw;
-  tunningSender.kiYaw = ki_yaw;
-  tunningSender.kdYaw = kd_yaw;
+  // Set the yaw tuning parameters in the tunningSender structure from the global variables
+  tunningSender.kpYaw = kp_yaw;     // Proportional gain for yaw
+  tunningSender.kiYaw = ki_yaw;     // Integral gain for yaw
+  tunningSender.kdYaw = kd_yaw;     // Derivative gain for yaw
+
+  // Set the current tuning state
   tunningSender.tunningState = state;
-  Serial.println("send data of pid to drone");
+
+  // Send the tuning data using ESP-NOW
+  // broadcastAddress should be a globally defined array containing the MAC address of the target device
+  // tunningSender is a structure containing the tuning parameters and state
+  // The data is sent as a byte array (uint8_t) and its size is determined by the size of the tunningSender structure
   esp_now_send(broadcastAddress, (uint8_t *)&tunningSender, sizeof(tunningSender));
 }
 
